@@ -6,6 +6,13 @@ export const config = {
     ? Number.parseInt(process.env.SOCKET_PORT, 10)
     : 65080,
 
-  MAX_PLAYER_LIMIT: 2,
   MAX_VIEWER_LIMIT: 4,
+};
+
+export const gameConfig = {
+  HOLES: 14,
+  STONE_COUNT: 6,
+  P1_BASE: 7,
+  P2_BASE: 14,
+  MAX_PLAYER_LIMIT: 2,
 };

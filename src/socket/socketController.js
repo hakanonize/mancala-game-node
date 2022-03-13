@@ -1,4 +1,6 @@
 import { Server } from 'socket.io';
+import Game from '../lib/Game.js';
+import Player from '../lib/Player.js';
 import Room from './roomManager.js';
 
 const app = (app) => {
@@ -8,12 +10,39 @@ const app = (app) => {
     },
   });
 
-  io.on('connection', (socket) => {
-    const { roomName, action, options } = socket.handshake.query;
+  let _rooms = {};
 
-    const sockets = socket.in('test').allSockets();
+  io.on('connection', async (socket) => {
+    const { userName, roomName, action, options } = socket.handshake.query;
+    const clients = await io.in(roomName).allSockets(); //GET SOCKETS IN ROOM
 
-    // const room = new Room({ roomName: 'test', io: socket });
+    if (action === 'create' && clients.size === 0) {
+      //CREATE ROOM IF NOT EXIST
+      if (!_rooms[roomName]) {
+        console.log('girdi');
+        const player1 = new Player({ socket, userName });
+        const game = new Game();
+        game._addPlayer(player1);
+        const room = new Room({ roomName, io, socket, game });
+        const createdRoom = await room.init({ userName });
+        _rooms[roomName] = room;
+        // console.log(_rooms[roomName].name);
+      }
+    }
+    if (action === 'join' && clients.size > 0) {
+      //JOIN ROOM IF ROOM EXIST
+      if (_rooms[roomName]) {
+        const joinedRoom = await _rooms[roomName].joinRoom(socket, userName);
+        const player2 = new Player({ socket, userName });
+        _rooms[roomName].game._addPlayer(player2);
+        // console.log(_rooms[roomName].name);
+      }
+    }
+
+    console.log(_rooms[roomName]?.game._getPlayers());
+
+    _rooms[roomName]?.onHit(socket);
+    _rooms[roomName]?.onDisconnect(socket); // If Room declared add disconnect listener to socket
   });
 };
 
