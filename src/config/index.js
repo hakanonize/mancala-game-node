@@ -13,6 +13,6 @@ export const gameConfig = {
   HOLES: 14,
   STONE_COUNT: 6,
   P1_BASE: 7,
-  P2_BASE: 14,
+  P2_BASE: 0,
   MAX_PLAYER_LIMIT: 2,
 };

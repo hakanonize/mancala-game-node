@@ -25,6 +25,7 @@ const app = (app) => {
         game._addPlayer(player1);
         const room = new Room({ roomName, io, socket, game });
         const createdRoom = await room.init({ userName });
+        if (createdRoom) socket.emit('joined', 0);
         _rooms[roomName] = room;
         // console.log(_rooms[roomName].name);
       }
@@ -33,6 +34,7 @@ const app = (app) => {
       //JOIN ROOM IF ROOM EXIST
       if (_rooms[roomName]) {
         const joinedRoom = await _rooms[roomName].joinRoom(socket, userName);
+        if (joinedRoom) socket.emit('joined', 1);
         const player2 = new Player({ socket, userName });
         _rooms[roomName].game._addPlayer(player2);
         // console.log(_rooms[roomName].name);
