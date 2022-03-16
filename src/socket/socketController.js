@@ -19,7 +19,6 @@ const app = (app) => {
     if (action === 'create' && clients.size === 0) {
       //CREATE ROOM IF NOT EXIST
       if (!_rooms[roomName]) {
-        console.log('girdi');
         const player1 = new Player({ socket, userName });
         const game = new Game();
         game._addPlayer(player1);
@@ -27,7 +26,11 @@ const app = (app) => {
         const createdRoom = await room.init({ userName });
         if (createdRoom) socket.emit('joined', 0);
         _rooms[roomName] = room;
-        // console.log(_rooms[roomName].name);
+      } else {
+        socket.emit(
+          'message',
+          'Error: There is a room with same name that you provided.'
+        );
       }
     }
     if (action === 'join' && clients.size > 0) {
@@ -37,7 +40,8 @@ const app = (app) => {
         if (joinedRoom) socket.emit('joined', 1);
         const player2 = new Player({ socket, userName });
         _rooms[roomName].game._addPlayer(player2);
-        // console.log(_rooms[roomName].name);
+      } else {
+        socket.emit('message', 'Error: There is no room with provided name');
       }
     }
 

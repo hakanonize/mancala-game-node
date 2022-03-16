@@ -29,6 +29,10 @@ class Game {
   }
 
   _move(hole, player) {
+    if (this.holes[hole] === 0) {
+      player.emit('message', 'Error: Please provide a not empty hole');
+      return;
+    }
     if (this.winner !== -1) {
       player.emit('message', 'Error: The Game is Ower');
       return;
